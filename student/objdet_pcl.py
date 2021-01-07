@@ -28,25 +28,59 @@ from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2, lab
 
 # object detection tools and helper functions
 import misc.objdet_tools as tools
+import open3d as o3d
+import time
 
-
+g_bContinue = True
 # visualize lidar point-cloud
-def show_pcl(pcl):
+def show_pcl(pcl, configs=None):
 
     ####### ID_S1_EX2 START #######     
     #######
     print("student task ID_S1_EX2")
 
     # step 1 : initialize open3d with key callback and create window
-    
+    disp = o3d.visualization.VisualizationWithKeyCallback()
+
+    key_to_callback = {}
+    global g_bContinue
+    g_bContinue = True
+    def cb(disp):
+        global g_bContinue
+        print("key pressed")
+        g_bContinue = False
+        return
+
+    disp.register_key_callback(262, cb)
+
+
     # step 2 : create instance of open3d point-cloud class
+    pcb = o3d.geometry.PointCloud()
+
 
     # step 3 : set points in pcd instance by converting the point-cloud into 3d vectors (using open3d function Vector3dVector)
+    if configs is not None:
+        lidar_pcl = pcl
+        mask = np.where((lidar_pcl[:, 0] >= configs.lim_x[0]) & (lidar_pcl[:, 0] <= configs.lim_x[1]) &
+                        (lidar_pcl[:, 1] >= configs.lim_y[0]) & (lidar_pcl[:, 1] <= configs.lim_y[1]) &
+                        (lidar_pcl[:, 2] >= configs.lim_z[0]) & (lidar_pcl[:, 2] <= configs.lim_z[1]))
+        pcl = lidar_pcl[mask]
+        xs, ys, zs = pcl[:,0].reshape(-1, 1), pcl[:,1].reshape(-1, 1), pcl[:,2].reshape(-1, 1)
+        pcl = np.hstack([-ys, xs, zs])
 
-    # step 4 : for the first frame, add the pcd instance to visualization using add_geometry; for all other frames, use update_geometry instead
+    pcd.points = o3d.utility.Vector3dVector(pcl[:,:3
     
-    # step 5 : visualize point cloud and keep window open until right-arrow is pressed (key-code 262)
+    ])
+    # step 4 : for the first frame, add the pcd instance to visualization using add_geometry; for all other frames, use update_geometry instead
+    disp.create_window()
+    disp.add_geometry(pcd)
 
+
+    # step 5 : visualize point cloud and keep window open until right-arrow is pressed (key-code 262)
+    disp.update_renderer()
+    while g_bContinue:
+        disp.poll_events()
+        time.sleep(0.5)
     #######
     ####### ID_S1_EX2 END #######     
        
@@ -59,18 +93,33 @@ def show_range_image(frame):
     print("student task ID_S1_EX1")
 
     # step 1 : extract lidar data and range image for the roof-mounted lidar
+    lidar_data = waymo_utils.get(frame.lasers, dataset_pb2.LaserName.TOP)
+    range_image, camera_projection, range_image_pose = waymo_utils.parse_range_image_and_camera_projection(lidar_data)
+    
     
     # step 2 : extract the range and the intensity channel from the range image
+    range_image = range_image[:,:,:2]
+
     
     # step 3 : set values <0 to zero
-    
+    range_image[range_image < 0] = 0
+
+
     # step 4 : map the range channel onto an 8-bit scale and make sure that the full range of values is appropriately considered
-    
+    range_channel = range_image[:,:,0]
+    range_channel = (range_channel/range_channel.max() * 255).astype(np.uint8)
+
+
     # step 5 : map the intensity channel onto an 8-bit scale and normalize with the difference between the 1- and 99-percentile to mitigate the influence of outliers
-    
+    intensity_channel = range_image[:,:,1]
+    percentile_1, percentile_99 = np.percentile(intensity_channel, [1, 99])
+    intensity_channel[intensity_channel > percentile_99] = percentile_99
+
+
     # step 6 : stack the range and intensity image vertically using np.vstack and convert the result to an unsigned 8-bit integer
-    
-    img_range_intensity = [] # remove after implementing all steps
+    img_range_intensity = np.vstack([range_channel, intensity_channel])
+    h, w = img_range_intensity.shape
+    img_range_intensity = img_range_intensity[:, :int((w/2))] # remove after implementing all steps
     #######
     ####### ID_S1_EX1 END #######     
     
