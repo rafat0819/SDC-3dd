@@ -40,24 +40,21 @@ def show_pcl(pcl, configs=None):
     print("student task ID_S1_EX2")
 
     # step 1 : initialize open3d with key callback and create window
-    disp = o3d.visualization.VisualizationWithKeyCallback()
-
+    vis = o3d.visualization.VisualizerWithKeyCallback()
+   
     key_to_callback = {}
     global g_bContinue
     g_bContinue = True
-    def cb(disp):
+    def cb(vis):
         global g_bContinue
         print("key pressed")
         g_bContinue = False
         return
-
-    disp.register_key_callback(262, cb)
-
-
+        
+    vis.register_key_callback(262, cb)
     # step 2 : create instance of open3d point-cloud class
-    pcb = o3d.geometry.PointCloud()
-
-
+    pcd = o3d.geometry.PointCloud()
+    
     # step 3 : set points in pcd instance by converting the point-cloud into 3d vectors (using open3d function Vector3dVector)
     if configs is not None:
         lidar_pcl = pcl
@@ -67,19 +64,17 @@ def show_pcl(pcl, configs=None):
         pcl = lidar_pcl[mask]
         xs, ys, zs = pcl[:,0].reshape(-1, 1), pcl[:,1].reshape(-1, 1), pcl[:,2].reshape(-1, 1)
         pcl = np.hstack([-ys, xs, zs])
-
-    pcd.points = o3d.utility.Vector3dVector(pcl[:,:3
     
-    ])
+    pcd.points = o3d.utility.Vector3dVector(pcl[:,:3])
     # step 4 : for the first frame, add the pcd instance to visualization using add_geometry; for all other frames, use update_geometry instead
-    disp.create_window()
-    disp.add_geometry(pcd)
-
-
+    vis.create_window()
+    vis.add_geometry(pcd)
+    
     # step 5 : visualize point cloud and keep window open until right-arrow is pressed (key-code 262)
-    disp.update_renderer()
+    
+    vis.update_renderer()
     while g_bContinue:
-        disp.poll_events()
+        vis.poll_events()
         time.sleep(0.5)
     #######
     ####### ID_S1_EX2 END #######     
@@ -145,16 +140,32 @@ def bev_from_pcl(lidar_pcl, configs):
     print("student task ID_S2_EX1")
 
     ## step 1 :  compute bev-map discretization by dividing x-range by the bev-image height (see configs)
+    discr_ys = (lidar_pcl[:,0] - configs.lim_x[0]) / (configs.lim_x[1] - configs.lim_x[0]) * (configs.bev_height - 1)
+    
+    discr_ys = discr_ys.round().astype(np.int)
 
-    ## step 2 : create a copy of the lidar pcl and transform all metrix x-coordinates into bev-image coordinates    
+    ## step 2 : create a copy of the lidar pcl and transform all metrix x-coordinates into bev-image coordinates   
+    lidar_pcl_cpy =  lidar_pcl.copy()
+    lidar_pcl_cpy[:, 1] = discr_ys
 
     # step 3 : perform the same operation as in step 2 for the y-coordinates but make sure that no negative bev-coordinates occur
+    discr_xs = (lidar_pcl[:,1] - configs.lim_y[0]) / (configs.lim_y[1] - configs.lim_y[0]) * (configs.bev_width -1)
 
+    discr_xs = discr_xs.round().astype(np.int)
+    lidar_pcl_cpy[:, 0] = discr_xs
     # step 4 : visualize point-cloud using the function show_pcl from a previous task
+    show_pcl(lidar_pcl_cpy)
+    
+    temp_map = np.zeros((configs.bev_height, configs.bev_width))
+    temp_map[discr_ys, discr_xs] = 255
+    cv2.imshow('image',   cv2.rotate(temp_map, cv2.ROTATE_180))
+    cv2.waitKey(0) 
+    
+    
     
     #######
     ####### ID_S2_EX1 END #######     
-    
+        
     
     # Compute intensity layer of the BEV map
     ####### ID_S2_EX2 START #######     
