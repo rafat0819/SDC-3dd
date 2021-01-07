@@ -120,7 +120,7 @@ while True:
 
         ## Compute lidar point-cloud from range image    
         if 'pcl_from_rangeimage' in exec_list:
-            print('computing point-cloud from lidar range image')
+            print('computing point-cloud from lidar range imag
             lidar_pcl = tools.pcl_from_range_image(frame)
             if (configs_det.save_results == True):  # save result to file TODO remove in student version
                 save_object_to_file(lidar_pcl, results_fullpath, data_filename, 'lidar_pcl', cnt_frame)
