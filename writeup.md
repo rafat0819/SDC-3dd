@@ -39,6 +39,8 @@ This task used the Open3D library to display the lidar point-cloud in a 3d viewe
     <img src="img/S_1_T_2/5.png"/>
     <br>
     <img src="img/S_1_T_2/6.png"/>
+    <br>
+    <em>Fig. 2: Lidar point-cloud in a 3d viewer</em>
 </p>
 
 
@@ -57,7 +59,7 @@ Vehicle frame point cloud are discretized into BEV space, and then the topmost z
 <p>
     <img src="img/S_2_T_1.png"/>
     <br>
-    <em>Fig. 2: An example visualization into BEV map coordinates</em>
+    <em>Fig. 3: An example visualization into BEV map coordinates</em>
 </p>
 
 ### TASK: Compute intensity layer of the BEV map (ID_S2_EX2)
@@ -77,7 +79,7 @@ We filled the "height" channel of the BEV map with data from the point-cloud. He
 <p>
     <img src="img/S_2_T_3.png"/>
     <br>
-    <em>Fig. 2: Height Layer</em>
+    <em>Fig. 4: Height Layer</em>
 </p>
 
 
@@ -94,7 +96,7 @@ This task is about converting x, y, w, l from the BEV space into vehicle space, 
 <p>
     <img src="img/S_3_T_1.png"/>
     <br>
-    <em>Fig. 2: Object Detection visualization</em>
+    <em>Fig. 5: Object Detection visualization</em>
 </p>
 
 
@@ -145,8 +147,8 @@ recall = true_positives / float(true_positives + false_negatives)
     <img src="img/S_4_T_1.png"/>
     <br>
     <img src="img/S_4_T_2.png"/>
-    <br>1
-    <em>Fig. 2: Detection Performance Evaluation</em>
+    <br>
+    <em>Fig. 6: Detection Performance Evaluation</em>
 </p>
 
 To make sure that the code produces plausible results, the flag configs_det.use_labels_as_objects should be set to True in a second run. The resulting performance measures for this setting should be the following:
