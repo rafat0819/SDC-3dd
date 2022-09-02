@@ -1,5 +1,4 @@
-# Self Driving Car Beta Testing Nanodegree
-# Midterm - 3D Object Detection
+# Self Driving Car: 3D Object Detection
 
 
 In this project, we used real-world data from the Waymo Open Dataset, detected objects in 3D point-clouds and evaluted the detections results. The major tasks accomplished to complete the project:
@@ -12,7 +11,7 @@ In this project, we used real-world data from the Waymo Open Dataset, detected o
 
 ## Compute Lidar Point-Cloud from Range Image
 
-### TASK: Visualize range image channels (ID_S1_EX1)
+### TASK: Visualize range image channels
 
 In the Waymo Open dataset, lidar data is stored as a range image. The range image is a two dimensional array. Its row is pitch, and its column is yaw, and it has two channels, range and intensity. This task is about extracting the "range" and "intensity" from the range image and converting the floating-point data to an 8-bit integer value range. 
 
@@ -46,7 +45,7 @@ This task used the Open3D library to display the lidar point-cloud in a 3d viewe
 
 ## Create Birds-Eye View from Lidar PCL
 
-### TASK: Convert sensor coordinates to BEV-map coordinates (ID_S2_EX1)
+### TASK: Convert sensor coordinates to BEV-map coordinates
 
 In this task, we created a birds-eye view perspective of the lidar point-cloud. Based on the (x,y)-coordinates in sensor space, we computed the respective coordinates within the BEV coordinate.
 
@@ -62,7 +61,7 @@ Vehicle frame point cloud are discretized into BEV space, and then the topmost z
     <em>Fig. 3: An example visualization into BEV map coordinates</em>
 </p>
 
-### TASK: Compute intensity layer of the BEV map (ID_S2_EX2)
+### TASK: Compute intensity layer of the BEV map
 
 We filled the "intensity" channel of the BEV map with data from the point-cloud. Intensity layer is normalized by the difference between max and min values before being stacked into BEV image.
 
@@ -72,7 +71,7 @@ We filled the "intensity" channel of the BEV map with data from the point-cloud.
     <em>Fig. 3: Intensity Layer</em>
 </p>
 
-### TASK: Compute height layer of the BEV map (ID_S2_EX3)
+### TASK: Compute height layer of the BEV map
 
 We filled the "height" channel of the BEV map with data from the point-cloud. Height layer is normalized by detection bounding box range limit in z direction.
 
@@ -85,11 +84,11 @@ We filled the "height" channel of the BEV map with data from the point-cloud. He
 
 ## Model-based Object Detection in BEV Image
 
-### TASK: Adding SFA3D model detection (ID_S2_EX1)
+### TASK: Adding SFA3D model detection
 
 A pretrained model "Super Fast and Accurate 3D Object Detection based on 3D LiDAR Point Clouds" is used to perform inference on the BEV image generated above.
 
-### TASK: Adding SFA3D model detection (ID_S2_EX1)
+### TASK: Adding SFA3D model detection
 
 This task is about converting x, y, w, l from the BEV space into vehicle space, such that all detections have the format [1, x, y, z, h, w, l, yaw], where 1 denotes the class id for the object type vehicle.
 
